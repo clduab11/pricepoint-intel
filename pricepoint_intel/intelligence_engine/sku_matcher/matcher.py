@@ -74,12 +74,13 @@ class SKUMatcher:
         },
     ]
 
-    def __init__(self, min_match_score: float = 60.0) -> None:
+    def __init__(self, min_match_score: float = 0.6) -> None:
         """Initialize the SKU matcher.
 
         Args:
-            min_match_score: Minimum fuzzy match score (0-100) to consider a match.
+            min_match_score: Minimum fuzzy match score (0.0-1.0) to consider a match.
         """
+        # Store as 0-1 decimal
         self.min_match_score = min_match_score
         self._catalog = self.SAMPLE_CATALOG.copy()
 
@@ -106,19 +107,20 @@ class SKUMatcher:
             if category and product["category"].lower() != category.lower():
                 continue
 
-            # Calculate fuzzy match score
+            # Calculate fuzzy match score (0-100 from fuzzywuzzy, convert to 0-1)
             product_name = product["product_name"]
             score = max(
                 fuzz.token_set_ratio(query.lower(), product_name.lower()),
                 fuzz.partial_ratio(query.lower(), product_name.lower()),
             )
+            normalized_score = score / 100.0
 
-            if score >= self.min_match_score:
+            if normalized_score >= self.min_match_score:
                 matches.append(
                     SKUMatch(
                         sku_id=product["sku_id"],
                         product_name=product["product_name"],
-                        match_score=score / 100.0,
+                        match_score=normalized_score,
                         source="internal_catalog",
                         category=product["category"],
                     )

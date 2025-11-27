@@ -1,4 +1,4 @@
-"""Tests for the Price Forecaster module."""
+"""Tests for the Predictive Models module."""
 
 from pricepoint_intel.intelligence_engine.predictive_models import PriceForecaster
 

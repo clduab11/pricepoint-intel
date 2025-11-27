@@ -71,7 +71,7 @@ app.add_middleware(SlowAPIMiddleware)
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
     """Handle rate limit exceeded errors."""
-    return HTTPException(status_code=429, detail="Rate limit exceeded. Please try again later.")
+    raise HTTPException(status_code=429, detail="Rate limit exceeded. Please try again later.")
 
 
 # ============================================

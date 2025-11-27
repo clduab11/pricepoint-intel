@@ -103,8 +103,11 @@ export const PromoCalibrationSlider: React.FC<PromoCalibrationSliderProps> = ({
     abortControllerRef.current = new AbortController();
     setIsLoading(true);
 
+    // Use environment variable or default to relative API path
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    
     try {
-      const response = await fetch('/api/v1/inference/simulate-promo', {
+      const response = await fetch(`${apiBaseUrl}/api/v1/inference/simulate-promo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

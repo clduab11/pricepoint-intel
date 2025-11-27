@@ -70,7 +70,7 @@ class TestSKUMatcher:
 
     def test_no_matches_below_threshold(self):
         """Test that no results are below min match score."""
-        matcher = SKUMatcher(min_match_score=80)
+        matcher = SKUMatcher(min_match_score=0.80)
         results = matcher.match("xyz123")  # Unlikely to match
 
         # All results should be above threshold
