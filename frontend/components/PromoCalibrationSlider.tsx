@@ -107,7 +107,7 @@ export const PromoCalibrationSlider: React.FC<PromoCalibrationSliderProps> = ({
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
     
     try {
-      const response = await fetch(`${apiBaseUrl}/api/v1/inference/simulate-promo`, {
+      const response = await fetch(`${apiBaseUrl}/v1/inference/simulate-promo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
