@@ -1,0 +1,53 @@
+# PricePoint Intel - Docker Compose Configuration
+
+version: '3.8'
+
+services:
+  # FastAPI REST API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=False
+      - HOST=0.0.0.0
+      - PORT=8000
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Dash Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"
+    command: ["python", "app.py", "--host", "0.0.0.0", "--port", "8050"]
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=False
+      - HOST=0.0.0.0
+      - PORT=8050
+    env_file:
+      - .env
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis_data:
