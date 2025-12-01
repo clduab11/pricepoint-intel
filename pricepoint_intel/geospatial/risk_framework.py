@@ -261,7 +261,7 @@ class ProximityScorer:
         with session_scope(self.db_config) as session:
             # Calculate bounding box for pre-filtering (1 degree ≈ 69 miles at equator)
             lat_delta = self.max_distance / 69.0
-            lon_delta = self.max_distance / (69.0 * math.cos(math.radians(latitude)))
+            lon_delta = self.max_distance / (69.0 * max(math.cos(math.radians(latitude)), 0.01))
 
             query = session.query(Vendor).filter(
                 Vendor.is_active == True,
