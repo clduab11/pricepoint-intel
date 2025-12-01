@@ -7,4 +7,3 @@
 export { SKUSearch } from './SKUSearch';
 export { PricingHeatmap } from './PricingHeatmap';
 export { VendorMatrix } from './VendorMatrix';
-export { default as PromoCalibrationSlider } from './PromoCalibrationSlider';

@@ -12,8 +12,8 @@ from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
 from pricepoint_intel import IntelligenceEngine
-from pricepoint_intel.intelligence_engine.predictive_models import PriceForecaster
 from pricepoint_intel.api.ingestion_routes import router as ingestion_router
+from pricepoint_intel.intelligence_engine.predictive_models import PriceForecaster
 from pricepoint_intel.models.schemas import (
     BenchmarkData,
     CategoryBenchmarkResponse,

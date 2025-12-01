@@ -7,30 +7,29 @@ import io
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
 from pricepoint_intel.database.connection import (
     DatabaseConfig,
-    init_database,
+    async_session_scope,
     check_connection,
     get_database_info,
-    session_scope,
+    init_database,
 )
-from pricepoint_intel.database.models import SKU, Vendor, VendorPricing, GeographicMarket
-from pricepoint_intel.ingestion.csv_importer import CSVImporter, ImportConfig, ImportStats
-from pricepoint_intel.ingestion.validators import (
-    SKUValidator,
-    PricingValidator,
-    MarketValidator,
-    VendorValidator,
-    ValidationResult,
-)
+from pricepoint_intel.database.models import SKU, GeographicMarket, Vendor, VendorPricing
 from pricepoint_intel.geospatial.risk_framework import (
     GeospatialRiskAnalyzer,
     ProximityScorer,
-    VarianceDetector,
     RegionalBenchmarker,
+    VarianceDetector,
+)
+from pricepoint_intel.ingestion.csv_importer import CSVImporter, ImportConfig
+from pricepoint_intel.ingestion.validators import (
+    MarketValidator,
+    PricingValidator,
+    SKUValidator,
+    VendorValidator,
 )
 
 # Create router
@@ -521,10 +520,13 @@ async def search_skus(body: SKUSearchRequest):
     Search and filter SKUs by name, category, supplier, or region.
     Returns SKUs with pricing summary.
     """
+    from sqlalchemy import func, select
+
     config = DatabaseConfig.from_env()
 
-    with session_scope(config) as session:
-        query = session.query(SKU).filter(SKU.is_active == True)
+    async with async_session_scope(config) as session:
+        # Build base query
+        query = select(SKU).filter(SKU.is_active == True)
 
         # Apply filters
         if body.query:
@@ -542,33 +544,49 @@ async def search_skus(body: SKUSearchRequest):
             query = query.filter(SKU.primary_supplier_id == body.supplier_id)
 
         # Get total count
-        total = query.count()
+        count_query = select(func.count()).select_from(query.subquery())
+        total_result = await session.execute(count_query)
+        total = total_result.scalar() or 0
 
         # Paginate
         offset = (body.page - 1) * body.page_size
-        skus = query.offset(offset).limit(body.page_size).all()
+        paginated_query = query.offset(offset).limit(body.page_size)
+        skus_result = await session.execute(paginated_query)
+        skus = skus_result.scalars().all()
 
-        # Build response with pricing summary
+        # Get all SKU IDs for batch pricing query
+        sku_ids = [s.sku_id for s in skus]
+
+        # Single aggregated query for pricing data (fixes N+1 problem)
+        pricing_data = {}
+        if sku_ids:
+            pricing_summary_query = (
+                select(
+                    VendorPricing.sku_id,
+                    func.avg(VendorPricing.price).label('avg_price'),
+                    func.min(VendorPricing.price).label('min_price'),
+                    func.max(VendorPricing.price).label('max_price'),
+                    func.count(VendorPricing.vendor_id).label('vendor_count'),
+                )
+                .filter(VendorPricing.sku_id.in_(sku_ids))
+                .group_by(VendorPricing.sku_id)
+            )
+            pricing_result = await session.execute(pricing_summary_query)
+            pricing_data = {r.sku_id: r for r in pricing_result}
+
+        # Build response using in-memory pricing_data
         items = []
         for sku in skus:
-            # Get pricing data
-            prices = (
-                session.query(VendorPricing.price)
-                .filter(VendorPricing.sku_id == sku.sku_id)
-                .all()
-            )
-
-            price_values = [float(p[0]) for p in prices]
-
+            summary = pricing_data.get(sku.sku_id)
             items.append(
                 SKUResponse(
                     sku_id=sku.sku_id,
                     product_name=sku.product_name,
                     category=sku.category,
                     manufacturer=sku.manufacturer,
-                    avg_price=sum(price_values) / len(price_values) if price_values else None,
-                    price_range=(min(price_values), max(price_values)) if price_values else None,
-                    vendor_count=len(price_values),
+                    avg_price=float(summary.avg_price) if summary and summary.avg_price else None,
+                    price_range=(float(summary.min_price), float(summary.max_price)) if summary and summary.min_price else None,
+                    vendor_count=summary.vendor_count if summary else 0,
                 )
             )
 
@@ -676,6 +694,8 @@ async def get_regional_benchmarks(
     - Percentile distribution (25th, 75th)
     - Regional cost index
     """
+    from sqlalchemy import select
+
     config = DatabaseConfig.from_env()
     benchmarker = RegionalBenchmarker(config)
 
@@ -683,14 +703,14 @@ async def get_regional_benchmarks(
         region_list = [r.strip() for r in regions.split(",")]
         results = benchmarker.compare_regions(region_list, category=category)
     else:
-        # Get all regions from database
-        with session_scope(config) as session:
-            market_regions = (
-                session.query(GeographicMarket.region_name)
+        # Get all regions from database using async session
+        async with async_session_scope(config) as session:
+            query = (
+                select(GeographicMarket.region_name)
                 .filter(GeographicMarket.is_active == True)
-                .all()
             )
-            region_list = [r[0] for r in market_regions]
+            result = await session.execute(query)
+            region_list = [r[0] for r in result.all()]
 
         if not region_list:
             # Return overall benchmark
@@ -770,33 +790,49 @@ async def get_data_summary():
     Returns counts and basic statistics for SKUs, vendors,
     pricing records, and markets.
     """
+    from sqlalchemy import func, select
+
     config = DatabaseConfig.from_env()
 
-    with session_scope(config) as session:
-        sku_count = session.query(SKU).filter(SKU.is_active == True).count()
-        vendor_count = session.query(Vendor).filter(Vendor.is_active == True).count()
-        pricing_count = session.query(VendorPricing).count()
-        market_count = session.query(GeographicMarket).filter(GeographicMarket.is_active == True).count()
+    async with async_session_scope(config) as session:
+        # Get counts using async queries
+        sku_count_result = await session.execute(
+            select(func.count()).select_from(SKU).filter(SKU.is_active == True)
+        )
+        sku_count = sku_count_result.scalar() or 0
+
+        vendor_count_result = await session.execute(
+            select(func.count()).select_from(Vendor).filter(Vendor.is_active == True)
+        )
+        vendor_count = vendor_count_result.scalar() or 0
+
+        pricing_count_result = await session.execute(
+            select(func.count()).select_from(VendorPricing)
+        )
+        pricing_count = pricing_count_result.scalar() or 0
+
+        market_count_result = await session.execute(
+            select(func.count()).select_from(GeographicMarket).filter(GeographicMarket.is_active == True)
+        )
+        market_count = market_count_result.scalar() or 0
 
         # Get category breakdown
-        from sqlalchemy import func
-
-        categories = (
-            session.query(SKU.category, func.count(SKU.sku_id))
+        category_query = (
+            select(SKU.category, func.count(SKU.sku_id))
             .filter(SKU.is_active == True)
             .group_by(SKU.category)
-            .all()
         )
+        category_result = await session.execute(category_query)
+        categories = category_result.all()
 
         # Get region breakdown
-        regions = (
-            session.query(
-                VendorPricing.geographic_region, func.count(VendorPricing.id)
-            )
+        region_query = (
+            select(VendorPricing.geographic_region, func.count(VendorPricing.id))
             .filter(VendorPricing.geographic_region.isnot(None))
             .group_by(VendorPricing.geographic_region)
-            .all()
         )
+        region_result = await session.execute(region_query)
+        regions = region_result.all()
 
         return {
             "totals": {

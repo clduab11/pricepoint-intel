@@ -5,29 +5,26 @@ Supports importing SKUs, pricing, vendors, and market data from flat files.
 
 import csv
 import io
-import logging
+from collections.abc import Generator
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import BinaryIO, Callable, Generator, Optional, TextIO, Type, Union
+from typing import BinaryIO, Callable, Optional, TextIO, Union
+
 import structlog
 
+from pricepoint_intel.database.connection import DatabaseConfig, session_scope
 from pricepoint_intel.database.models import (
     SKU,
+    GeographicMarket,
     Vendor,
     VendorPricing,
-    GeographicMarket,
-    DistributionCenter,
 )
-from pricepoint_intel.database.connection import session_scope, DatabaseConfig
 from pricepoint_intel.ingestion.validators import (
-    DataValidator,
-    SKUValidator,
-    PricingValidator,
     MarketValidator,
+    PricingValidator,
+    SKUValidator,
     VendorValidator,
-    ValidationResult,
-    ValidationSeverity,
 )
 
 logger = structlog.get_logger(__name__)
@@ -115,7 +112,7 @@ class CSVImporter:
             Dictionary for each row
         """
         if isinstance(file_path, (str, Path)):
-            with open(file_path, "r", encoding=self.config.encoding) as f:
+            with open(file_path, encoding=self.config.encoding) as f:
                 yield from self._parse_csv(f)
         elif hasattr(file_path, "read"):
             # File-like object
@@ -724,6 +721,158 @@ class ExcelImporter(CSVImporter):
         )
         return stats
 
+    def import_vendors_excel(
+        self,
+        file_path: Union[str, Path, BinaryIO],
+        sheet_name: Optional[str] = None,
+    ) -> ImportStats:
+        """Import vendor data from Excel file.
+
+        Args:
+            file_path: Path to Excel file
+            sheet_name: Optional sheet name
+
+        Returns:
+            ImportStats with operation results
+        """
+        validator = VendorValidator()
+        stats = ImportStats(start_time=datetime.utcnow())
+
+        logger.info("Starting vendor import from Excel", file=str(file_path))
+
+        batch = []
+        with session_scope(self.db_config) as session:
+            for row_idx, row in enumerate(self._read_excel(file_path, sheet_name)):
+                stats.total_rows += 1
+
+                result = validator.validate(row, row_index=row_idx)
+
+                if not result.is_valid:
+                    stats.failed += 1
+                    stats.errors.extend([e.to_dict() for e in result.errors])
+                    if self.config.on_error == "stop":
+                        break
+                    continue
+
+                if result.warnings:
+                    stats.warnings += len(result.warnings)
+
+                if self.config.dry_run:
+                    stats.successful += 1
+                    continue
+
+                if self.config.update_existing:
+                    existing = (
+                        session.query(Vendor)
+                        .filter(Vendor.vendor_id == result.cleaned_data["vendor_id"])
+                        .first()
+                    )
+                    if existing:
+                        for key, value in result.cleaned_data.items():
+                            if key != "vendor_id":
+                                setattr(existing, key, value)
+                        stats.successful += 1
+                        continue
+
+                vendor = Vendor(**result.cleaned_data)
+                batch.append(vendor)
+
+                if len(batch) >= self.config.batch_size:
+                    session.add_all(batch)
+                    session.flush()
+                    stats.successful += len(batch)
+                    batch = []
+
+            if batch:
+                session.add_all(batch)
+                session.flush()
+                stats.successful += len(batch)
+
+        stats.end_time = datetime.utcnow()
+        logger.info(
+            "Excel vendor import complete",
+            total=stats.total_rows,
+            successful=stats.successful,
+        )
+        return stats
+
+    def import_markets_excel(
+        self,
+        file_path: Union[str, Path, BinaryIO],
+        sheet_name: Optional[str] = None,
+    ) -> ImportStats:
+        """Import geographic market data from Excel file.
+
+        Args:
+            file_path: Path to Excel file
+            sheet_name: Optional sheet name
+
+        Returns:
+            ImportStats with operation results
+        """
+        validator = MarketValidator()
+        stats = ImportStats(start_time=datetime.utcnow())
+
+        logger.info("Starting market import from Excel", file=str(file_path))
+
+        batch = []
+        with session_scope(self.db_config) as session:
+            for row_idx, row in enumerate(self._read_excel(file_path, sheet_name)):
+                stats.total_rows += 1
+
+                result = validator.validate(row, row_index=row_idx)
+
+                if not result.is_valid:
+                    stats.failed += 1
+                    stats.errors.extend([e.to_dict() for e in result.errors])
+                    if self.config.on_error == "stop":
+                        break
+                    continue
+
+                if result.warnings:
+                    stats.warnings += len(result.warnings)
+
+                if self.config.dry_run:
+                    stats.successful += 1
+                    continue
+
+                if self.config.update_existing:
+                    existing = (
+                        session.query(GeographicMarket)
+                        .filter(
+                            GeographicMarket.market_id == result.cleaned_data["market_id"]
+                        )
+                        .first()
+                    )
+                    if existing:
+                        for key, value in result.cleaned_data.items():
+                            if key != "market_id":
+                                setattr(existing, key, value)
+                        stats.successful += 1
+                        continue
+
+                market = GeographicMarket(**result.cleaned_data)
+                batch.append(market)
+
+                if len(batch) >= self.config.batch_size:
+                    session.add_all(batch)
+                    session.flush()
+                    stats.successful += len(batch)
+                    batch = []
+
+            if batch:
+                session.add_all(batch)
+                session.flush()
+                stats.successful += len(batch)
+
+        stats.end_time = datetime.utcnow()
+        logger.info(
+            "Excel market import complete",
+            total=stats.total_rows,
+            successful=stats.successful,
+        )
+        return stats
+
 
 class BulkImporter:
     """Orchestrate bulk import operations across multiple data types."""
@@ -769,14 +918,17 @@ class BulkImporter:
         if vendors_file:
             logger.info("Importing vendors...")
             if str(vendors_file).endswith((".xlsx", ".xls")):
-                results["vendors"] = self.excel_importer.import_skus_excel(vendors_file)
+                results["vendors"] = self.excel_importer.import_vendors_excel(vendors_file)
             else:
                 results["vendors"] = self.csv_importer.import_vendors(vendors_file)
 
         # Import markets
         if markets_file:
             logger.info("Importing markets...")
-            results["markets"] = self.csv_importer.import_markets(markets_file)
+            if str(markets_file).endswith((".xlsx", ".xls")):
+                results["markets"] = self.excel_importer.import_markets_excel(markets_file)
+            else:
+                results["markets"] = self.csv_importer.import_markets(markets_file)
 
         # Import SKUs (needed for pricing)
         if skus_file:
@@ -823,12 +975,15 @@ class BulkImporter:
 
         if vendors_file:
             if str(vendors_file).endswith((".xlsx", ".xls")):
-                results["vendors"] = excel_importer.import_skus_excel(vendors_file)
+                results["vendors"] = excel_importer.import_vendors_excel(vendors_file)
             else:
                 results["vendors"] = csv_importer.import_vendors(vendors_file)
 
         if markets_file:
-            results["markets"] = csv_importer.import_markets(markets_file)
+            if str(markets_file).endswith((".xlsx", ".xls")):
+                results["markets"] = excel_importer.import_markets_excel(markets_file)
+            else:
+                results["markets"] = csv_importer.import_markets(markets_file)
 
         if skus_file:
             if str(skus_file).endswith((".xlsx", ".xls")):

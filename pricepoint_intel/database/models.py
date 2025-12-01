@@ -3,31 +3,27 @@
 Supports both SQLite (MVP) and PostgreSQL (production) via configuration flags.
 """
 
+import enum
 from datetime import datetime
-from decimal import Decimal
 from typing import Optional
-import json
 
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime,
-    ForeignKey,
-    Text,
-    Boolean,
-    Numeric,
-    Index,
-    UniqueConstraint,
-    CheckConstraint,
     JSON,
-    Enum as SQLEnum,
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-import enum
 
 Base = declarative_base()
 

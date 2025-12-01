@@ -2,13 +2,13 @@
 
 from pricepoint_intel.geospatial.risk_framework import (
     GeospatialRiskAnalyzer,
-    ProximityScorer,
-    VarianceDetector,
-    RegionalBenchmarker,
-    VendorProximityResult,
     PricingVarianceResult,
+    ProximityScorer,
     RegionalBenchmark,
+    RegionalBenchmarker,
     RiskAssessment,
+    VarianceDetector,
+    VendorProximityResult,
 )
 
 __all__ = [

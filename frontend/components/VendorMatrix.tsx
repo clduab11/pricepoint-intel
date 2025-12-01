@@ -49,36 +49,62 @@ export const VendorMatrix: React.FC<VendorMatrixProps> = ({
   const [sortBy, setSortBy] = useState<'name' | 'coverage' | 'price'>('coverage');
   const [filterCategory, setFilterCategory] = useState<string>('');
 
-  // Sort vendors by selected criteria
+  // Pre-compute lookup maps once for all matrix operations
+  const { vendorToCells, skuToCells, cellLookup } = useMemo(() => {
+    const vendorMap = new Map<string, VendorMatrixCell[]>();
+    const skuMap = new Map<string, VendorMatrixCell[]>();
+    const lookup = new Map<string, VendorMatrixCell>();
+
+    for (const row of data.matrix) {
+      for (const cell of row) {
+        // Build vendor lookup
+        if (!vendorMap.has(cell.vendor_id)) {
+          vendorMap.set(cell.vendor_id, []);
+        }
+        vendorMap.get(cell.vendor_id)!.push(cell);
+
+        // Build SKU lookup
+        if (!skuMap.has(cell.sku_id)) {
+          skuMap.set(cell.sku_id, []);
+        }
+        skuMap.get(cell.sku_id)!.push(cell);
+
+        // Build direct cell lookup for O(1) access
+        lookup.set(`${cell.vendor_id}-${cell.sku_id}`, cell);
+      }
+    }
+
+    return { vendorToCells: vendorMap, skuToCells: skuMap, cellLookup: lookup };
+  }, [data.matrix]);
+
+  // Sort vendors by selected criteria using pre-computed lookup
   const sortedVendors = useMemo(() => {
     const vendors = [...data.vendors];
     switch (sortBy) {
       case 'name':
         return vendors.sort((a, b) => a.vendor_name.localeCompare(b.vendor_name));
-      case 'coverage':
+      case 'coverage': {
         return vendors.sort((a, b) => {
-          const aCount = data.matrix
-            .flat()
-            .filter((c) => c.vendor_id === a.vendor_id && c.has_pricing).length;
-          const bCount = data.matrix
-            .flat()
-            .filter((c) => c.vendor_id === b.vendor_id && c.has_pricing).length;
+          const aCells = vendorToCells.get(a.vendor_id) || [];
+          const bCells = vendorToCells.get(b.vendor_id) || [];
+          const aCount = aCells.filter((c) => c.has_pricing).length;
+          const bCount = bCells.filter((c) => c.has_pricing).length;
           return bCount - aCount;
         });
-      case 'price':
+      }
+      case 'price': {
         return vendors.sort((a, b) => {
-          const aRank = data.matrix
-            .flat()
-            .filter((c) => c.vendor_id === a.vendor_id && c.price_rank === 1).length;
-          const bRank = data.matrix
-            .flat()
-            .filter((c) => c.vendor_id === b.vendor_id && c.price_rank === 1).length;
+          const aCells = vendorToCells.get(a.vendor_id) || [];
+          const bCells = vendorToCells.get(b.vendor_id) || [];
+          const aRank = aCells.filter((c) => c.price_rank === 1).length;
+          const bRank = bCells.filter((c) => c.price_rank === 1).length;
           return bRank - aRank;
         });
+      }
       default:
         return vendors;
     }
-  }, [data.vendors, data.matrix, sortBy]);
+  }, [data.vendors, vendorToCells, sortBy]);
 
   // Filter SKUs by category
   const filteredSKUs = useMemo(() => {
@@ -92,13 +118,11 @@ export const VendorMatrix: React.FC<VendorMatrixProps> = ({
     return Array.from(cats).sort();
   }, [data.skus]);
 
-  // Calculate vendor coverage stats
+  // Calculate vendor coverage stats using pre-computed lookup
   const vendorStats = useMemo(() => {
     const stats = new Map<string, { coverage: number; bestPrice: number }>();
     sortedVendors.forEach((vendor) => {
-      const vendorCells = data.matrix
-        .flat()
-        .filter((c) => c.vendor_id === vendor.vendor_id);
+      const vendorCells = vendorToCells.get(vendor.vendor_id) || [];
       const withPricing = vendorCells.filter((c) => c.has_pricing);
       const bestPriceCount = vendorCells.filter((c) => c.price_rank === 1).length;
       stats.set(vendor.vendor_id, {
@@ -107,27 +131,24 @@ export const VendorMatrix: React.FC<VendorMatrixProps> = ({
       });
     });
     return stats;
-  }, [sortedVendors, data.matrix, data.skus]);
+  }, [sortedVendors, vendorToCells, data.skus.length]);
 
-  // Check if SKU has single source
+  // Check if SKU has single source using pre-computed lookup
   const isSingleSource = useCallback(
     (skuId: string): boolean => {
-      const skuCells = data.matrix
-        .flat()
-        .filter((c) => c.sku_id === skuId && c.has_pricing);
-      return skuCells.length === 1;
+      const skuCells = skuToCells.get(skuId) || [];
+      const pricedCells = skuCells.filter((c) => c.has_pricing);
+      return pricedCells.length === 1;
     },
-    [data.matrix]
+    [skuToCells]
   );
 
-  // Get cell for vendor/SKU combination
+  // Get cell for vendor/SKU combination using O(1) lookup
   const getCell = useCallback(
     (vendorId: string, skuId: string): VendorMatrixCell | undefined => {
-      return data.matrix
-        .flat()
-        .find((c) => c.vendor_id === vendorId && c.sku_id === skuId);
+      return cellLookup.get(`${vendorId}-${skuId}`);
     },
-    [data.matrix]
+    [cellLookup]
   );
 
   const handleCellHover = useCallback(

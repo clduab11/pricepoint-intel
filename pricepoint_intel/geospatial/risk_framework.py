@@ -4,26 +4,25 @@ Provides distance-based vendor analysis, regional pricing variance detection,
 and cost benchmarking aggregation by market region.
 """
 
+import logging
 import math
 import statistics
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Optional
-import logging
 
-from sqlalchemy import func, and_, case
-from sqlalchemy.orm import Session
+from sqlalchemy import func
 
+from pricepoint_intel.database.connection import DatabaseConfig, session_scope
 from pricepoint_intel.database.models import (
+    SKU,
+    DistributionCenter,
+    GeographicMarket,
+    PriceHistory,
     Vendor,
     VendorPricing,
-    GeographicMarket,
-    DistributionCenter,
-    SKU,
-    PriceHistory,
 )
-from pricepoint_intel.database.connection import session_scope, DatabaseConfig
 
 logger = logging.getLogger(__name__)
 
@@ -260,10 +259,17 @@ class ProximityScorer:
         results = []
 
         with session_scope(self.db_config) as session:
+            # Calculate bounding box for pre-filtering (1 degree ≈ 69 miles at equator)
+            lat_delta = self.max_distance / 69.0
+            lon_delta = self.max_distance / (69.0 * math.cos(math.radians(latitude)))
+
             query = session.query(Vendor).filter(
                 Vendor.is_active == True,
                 Vendor.latitude.isnot(None),
                 Vendor.longitude.isnot(None),
+                # Bounding box pre-filter for performance
+                Vendor.latitude.between(latitude - lat_delta, latitude + lat_delta),
+                Vendor.longitude.between(longitude - lon_delta, longitude + lon_delta),
             )
 
             if min_reliability is not None:
