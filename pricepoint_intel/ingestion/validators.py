@@ -3,13 +3,13 @@
 Provides comprehensive validation for SKU, pricing, and market data.
 """
 
+import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from enum import Enum
-from typing import Any, Callable, Optional
-import logging
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 

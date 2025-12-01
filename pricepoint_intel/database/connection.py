@@ -1,17 +1,25 @@
 """Database connection and session management.
 
 Supports both SQLite (MVP) and PostgreSQL (production) via configuration.
+Provides both sync and async session management for FastAPI compatibility.
 """
 
-import os
-from contextlib import contextmanager
-from dataclasses import dataclass
-from typing import Generator, Optional
 import logging
+import os
+from collections.abc import AsyncGenerator, Generator
+from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass
+from typing import Optional
 
-from sqlalchemy import create_engine, event, Engine, text
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.pool import StaticPool
+from sqlalchemy import Engine, create_engine, event, text
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool, StaticPool
 
 from pricepoint_intel.database.models import Base
 
@@ -80,13 +88,13 @@ class DatabaseConfig:
         )
 
     def get_connection_string(self) -> str:
-        """Get the appropriate connection string based on configuration."""
+        """Get the appropriate async connection string based on configuration."""
         if self.use_postgres:
             return (
                 f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}"
                 f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
             )
-        return f"sqlite:///{self.sqlite_path}"
+        return f"sqlite+aiosqlite:///{self.sqlite_path}"
 
     def get_sync_connection_string(self) -> str:
         """Get synchronous connection string (for non-async operations)."""
@@ -98,9 +106,13 @@ class DatabaseConfig:
         return f"sqlite:///{self.sqlite_path}"
 
 
-# Global engine and session factory
+# Global engine and session factory (sync)
 _engine: Optional[Engine] = None
 _SessionLocal: Optional[sessionmaker] = None
+
+# Global async engine and session factory
+_async_engine: Optional[AsyncEngine] = None
+_AsyncSessionLocal: Optional[async_sessionmaker] = None
 
 
 def get_engine(config: Optional[DatabaseConfig] = None) -> Engine:
@@ -216,6 +228,107 @@ def session_scope(config: Optional[DatabaseConfig] = None) -> Generator[Session,
     finally:
         session.close()
 
+
+def get_async_engine(config: Optional[DatabaseConfig] = None) -> AsyncEngine:
+    """Get or create the async database engine.
+
+    Args:
+        config: Database configuration. If None, loads from environment.
+
+    Returns:
+        SQLAlchemy AsyncEngine instance
+    """
+    global _async_engine
+
+    if _async_engine is not None:
+        return _async_engine
+
+    if config is None:
+        config = DatabaseConfig.from_env()
+
+    connection_string = config.get_connection_string()
+    logger.info(
+        f"Creating async database engine: {'PostgreSQL' if config.use_postgres else 'SQLite'}"
+    )
+
+    if config.use_postgres:
+        # PostgreSQL async configuration
+        _async_engine = create_async_engine(
+            connection_string,
+            echo=config.echo,
+            pool_size=config.pool_size,
+            max_overflow=config.max_overflow,
+            pool_pre_ping=True,
+        )
+    else:
+        # SQLite async configuration
+        _async_engine = create_async_engine(
+            connection_string,
+            echo=config.echo,
+            poolclass=NullPool,  # Use NullPool for SQLite async
+        )
+
+    return _async_engine
+
+
+def get_async_session_factory(config: Optional[DatabaseConfig] = None) -> async_sessionmaker:
+    """Get or create the async session factory.
+
+    Args:
+        config: Database configuration. If None, loads from environment.
+
+    Returns:
+        SQLAlchemy async_sessionmaker instance
+    """
+    global _AsyncSessionLocal
+
+    if _AsyncSessionLocal is not None:
+        return _AsyncSessionLocal
+
+    engine = get_async_engine(config)
+    _AsyncSessionLocal = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
+
+    return _AsyncSessionLocal
+
+
+@asynccontextmanager
+async def async_session_scope(
+    config: Optional[DatabaseConfig] = None
+) -> AsyncGenerator[AsyncSession, None]:
+    """Provide an async transactional scope around a series of operations.
+
+    Args:
+        config: Database configuration. If None, loads from environment.
+
+    Yields:
+        SQLAlchemy AsyncSession instance
+    """
+    AsyncSessionLocal = get_async_session_factory(config)
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception as e:
+            await session.rollback()
+            logger.error(f"Database error: {e}")
+            raise
+
+
+async def reset_async_engine() -> None:
+    """Reset the global async engine and session factory.
+
+    Useful for testing or when changing database configuration.
+    """
+    global _async_engine, _AsyncSessionLocal
+
+    if _async_engine is not None:
+        await _async_engine.dispose()
+        _async_engine = None
+
+    _AsyncSessionLocal = None
+    logger.info("Async database engine reset.")
 
 def init_database(config: Optional[DatabaseConfig] = None, drop_existing: bool = False) -> None:
     """Initialize the database schema.
