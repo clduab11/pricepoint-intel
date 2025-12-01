@@ -1,0 +1,6 @@
+vendor_id,vendor_name,vendor_type,contact_email,contact_phone,website,headquarters_city,headquarters_state,headquarters_country,headquarters_zip,latitude,longitude,reliability_score,avg_lead_time_days,min_order_value
+VENDOR-001,BuildMart Supply,distributor,sales@buildmart.example.com,555-100-1000,https://buildmart.example.com,Atlanta,GA,USA,30301,33.749,-84.388,0.92,3,100.0
+VENDOR-002,Wholesale Materials Corp,wholesaler,orders@wholesalematerials.example.com,555-200-2000,https://wholesalematerials.example.com,Chicago,IL,USA,60601,41.878,-87.63,0.88,5,250.0
+VENDOR-003,Pacific Building Products,distributor,info@pacificbp.example.com,555-300-3000,https://pacificbp.example.com,Los Angeles,CA,USA,90001,34.052,-118.244,0.95,4,150.0
+VENDOR-004,Northeast Hardware Direct,distributor,support@nehardware.example.com,555-400-4000,https://nehardware.example.com,Boston,MA,USA,02101,42.361,-71.057,0.9,2,75.0
+VENDOR-005,Texas Pro Supply,wholesaler,orders@texasprosupply.example.com,555-500-5000,https://texasprosupply.example.com,Dallas,TX,USA,75201,32.779,-96.809,0.85,6,200.0

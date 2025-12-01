@@ -1,0 +1,91 @@
+sku_id,product_name,description,category,subcategory,weight_lbs,length_inches,width_inches,height_inches,unit_of_measure,units_per_case,primary_supplier_id,manufacturer,manufacturer_part_number,upc_code
+FLO-0001,Oak Hardwood Plank,High-quality oak hardwood plank for professional and DIY projects.,flooring,,32.2,,,,each,,VENDOR-001,OakCo Inc,MFG-21395,130201276659
+FLO-0002,Maple Hardwood Strip,High-quality maple hardwood strip for professional and DIY projects.,flooring,,5.1,,,13.7,each,24,VENDOR-002,MapleCo Inc,,988022315787
+FLO-0003,Bamboo Engineered,High-quality bamboo engineered for professional and DIY projects.,flooring,,8.4,27.4,11.1,2.9,each,,VENDOR-003,BambooCo Inc,MFG-15695,235447068293
+FLO-0004,Luxury Vinyl Plank,High-quality luxury vinyl plank for professional and DIY projects.,flooring,,48.7,53.4,40.0,20.8,each,1,VENDOR-001,LuxuryCo Inc,MFG-20458,211095701426
+FLO-0005,Porcelain Tile 12x12,High-quality porcelain tile 12x12 for professional and DIY projects.,flooring,,19.3,80.2,8.6,,each,1,VENDOR-005,PorcelainCo Inc,MFG-42087,
+FLO-0006,Ceramic Tile 18x18,High-quality ceramic tile 18x18 for professional and DIY projects.,flooring,,19.3,61.8,27.2,20.3,each,6,VENDOR-001,CeramicCo Inc,MFG-18675,
+FLO-0007,Laminate Flooring,High-quality laminate flooring for professional and DIY projects.,flooring,,47.2,30.9,31.8,,each,24,VENDOR-002,,,921467220156
+FLO-0008,Cork Flooring Tile,High-quality cork flooring tile for professional and DIY projects.,flooring,,29.4,38.9,11.3,12.5,each,,VENDOR-001,CorkCo Inc,,
+FLO-0009,Rubber Flooring Roll,High-quality rubber flooring roll for professional and DIY projects.,flooring,,34.2,37.6,29.0,,each,,VENDOR-005,RubberCo Inc,,926939990836
+FLO-0010,Carpet Tile Commercial,High-quality carpet tile commercial for professional and DIY projects.,flooring,,13.7,11.6,21.4,,each,12,VENDOR-005,CarpetCo Inc,MFG-23947,656795048359
+BUI-0011,Drywall Sheet 4x8,High-quality drywall sheet 4x8 for professional and DIY projects.,building_materials,,30.6,,,13.2,each,1,VENDOR-005,DrywallCo Inc,,988335239225
+BUI-0012,Plywood 3/4 CDX,High-quality plywood 3/4 cdx for professional and DIY projects.,building_materials,,15.7,,,22.8,each,,VENDOR-004,PlywoodCo Inc,MFG-79822,822105942877
+BUI-0013,OSB Sheathing 7/16,High-quality osb sheathing 7/16 for professional and DIY projects.,building_materials,,24.0,26.2,42.0,,each,,VENDOR-005,OSBCo Inc,MFG-50857,
+BUI-0014,Concrete Mix 80lb,High-quality concrete mix 80lb for professional and DIY projects.,building_materials,,33.7,86.5,22.2,,each,,VENDOR-001,ConcreteCo Inc,,
+BUI-0015,Mortar Mix 60lb,High-quality mortar mix 60lb for professional and DIY projects.,building_materials,,4.0,22.7,43.6,2.2,each,,VENDOR-004,,,733812803930
+BUI-0016,Rebar #4 20ft,High-quality rebar #4 20ft for professional and DIY projects.,building_materials,,23.9,77.7,9.9,,each,,VENDOR-004,RebarCo Inc,MFG-17100,812896561232
+BUI-0017,Fiberglass Insulation R-13,High-quality fiberglass insulation r-13 for professional and DIY projects.,building_materials,,5.4,33.2,41.5,,each,,VENDOR-004,,,
+BUI-0018,Foam Board Insulation 2in,High-quality foam board insulation 2in for professional and DIY projects.,building_materials,,43.8,,,20.6,each,,VENDOR-005,FoamCo Inc,MFG-40982,
+BUI-0019,House Wrap Roll,High-quality house wrap roll for professional and DIY projects.,building_materials,,24.5,,,,each,,VENDOR-004,,,601588311245
+BUI-0020,Roofing Shingles Bundle,High-quality roofing shingles bundle for professional and DIY projects.,building_materials,,14.6,70.4,37.8,11.9,each,,VENDOR-002,RoofingCo Inc,MFG-81066,
+ELE-0021,Romex Wire 12/2 250ft,High-quality romex wire 12/2 250ft for professional and DIY projects.,electrical,,16.0,,,,each,6,VENDOR-001,RomexCo Inc,,
+ELE-0022,Electrical Panel 200A,High-quality electrical panel 200a for professional and DIY projects.,electrical,,30.0,23.3,6.6,6.3,each,1,VENDOR-004,ElectricalCo Inc,MFG-51467,835316694200
+ELE-0023,Circuit Breaker 20A,High-quality circuit breaker 20a for professional and DIY projects.,electrical,,36.0,,,,each,12,VENDOR-004,CircuitCo Inc,MFG-19508,
+ELE-0024,LED Recessed Light 6in,High-quality led recessed light 6in for professional and DIY projects.,electrical,,31.2,10.5,26.3,3.6,each,,VENDOR-001,LEDCo Inc,,
+ELE-0025,Outlet Receptacle 15A,High-quality outlet receptacle 15a for professional and DIY projects.,electrical,,41.8,59.1,47.4,0.7,each,12,VENDOR-001,OutletCo Inc,,
+ELE-0026,Light Switch Single Pole,High-quality light switch single pole for professional and DIY projects.,electrical,,5.8,26.9,29.4,5.3,each,12,VENDOR-005,LightCo Inc,MFG-16658,
+ELE-0027,Conduit EMT 10ft,High-quality conduit emt 10ft for professional and DIY projects.,electrical,,21.5,,,,each,12,VENDOR-002,ConduitCo Inc,MFG-66057,182084873288
+ELE-0028,Wire Connector Pack,High-quality wire connector pack for professional and DIY projects.,electrical,,47.3,15.2,2.7,,each,24,VENDOR-002,,,329170045638
+ELE-0029,Junction Box Metal,High-quality junction box metal for professional and DIY projects.,electrical,,34.3,34.6,27.3,23.4,each,6,VENDOR-002,JunctionCo Inc,MFG-64040,
+ELE-0030,Ceiling Fan 52in,High-quality ceiling fan 52in for professional and DIY projects.,electrical,,37.0,89.4,38.7,19.6,each,,VENDOR-001,CeilingCo Inc,,
+PLU-0031,PVC Pipe 3in 10ft,High-quality pvc pipe 3in 10ft for professional and DIY projects.,plumbing,,10.4,34.2,39.6,5.7,each,24,VENDOR-003,,,805882797681
+PLU-0032,Copper Pipe 1/2in 10ft,High-quality copper pipe 1/2in 10ft for professional and DIY projects.,plumbing,,25.7,81.1,16.6,,each,12,VENDOR-002,CopperCo Inc,MFG-15014,
+PLU-0033,PEX Tubing 1/2in 100ft,High-quality pex tubing 1/2in 100ft for professional and DIY projects.,plumbing,,22.0,30.8,29.5,9.6,each,12,VENDOR-001,PEXCo Inc,,853931910508
+PLU-0034,Toilet Standard,High-quality toilet standard for professional and DIY projects.,plumbing,,36.1,64.7,18.1,,each,12,VENDOR-005,ToiletCo Inc,MFG-49363,549540881993
+PLU-0035,Bathroom Sink Pedestal,High-quality bathroom sink pedestal for professional and DIY projects.,plumbing,,16.6,53.7,10.0,9.4,each,6,VENDOR-005,BathroomCo Inc,MFG-10053,
+PLU-0036,Kitchen Faucet Chrome,High-quality kitchen faucet chrome for professional and DIY projects.,plumbing,,10.9,58.6,16.1,,each,24,VENDOR-002,KitchenCo Inc,,467731925068
+PLU-0037,Water Heater 50gal,High-quality water heater 50gal for professional and DIY projects.,plumbing,,5.1,23.3,15.6,4.0,each,,VENDOR-004,WaterCo Inc,MFG-69692,
+PLU-0038,Shower Valve Trim,High-quality shower valve trim for professional and DIY projects.,plumbing,,31.7,,,12.1,each,,VENDOR-001,ShowerCo Inc,MFG-23970,294213443847
+PLU-0039,Garbage Disposal 3/4HP,High-quality garbage disposal 3/4hp for professional and DIY projects.,plumbing,,40.3,45.1,27.2,3.4,each,,VENDOR-004,GarbageCo Inc,MFG-88047,
+PLU-0040,Supply Line Braided,High-quality supply line braided for professional and DIY projects.,plumbing,,37.9,78.4,42.9,,each,24,VENDOR-002,SupplyCo Inc,MFG-43972,803686852877
+HVA-0041,Furnace Filter 20x25x1,High-quality furnace filter 20x25x1 for professional and DIY projects.,hvac,,14.2,47.0,12.2,,each,6,VENDOR-003,FurnaceCo Inc,MFG-20561,
+HVA-0042,Ductwork Flexible 6in,High-quality ductwork flexible 6in for professional and DIY projects.,hvac,,11.9,68.1,4.0,,each,24,VENDOR-001,,MFG-86556,941301014309
+HVA-0043,Thermostat Programmable,High-quality thermostat programmable for professional and DIY projects.,hvac,,29.0,90.6,15.0,,each,24,VENDOR-005,ThermostatCo Inc,MFG-89069,342615098233
+HVA-0044,AC Condenser Unit,High-quality ac condenser unit for professional and DIY projects.,hvac,,14.0,37.9,32.4,17.5,each,6,VENDOR-005,ACCo Inc,MFG-87580,190310715647
+HVA-0045,Ventilation Fan 80CFM,High-quality ventilation fan 80cfm for professional and DIY projects.,hvac,,32.3,,,,each,,VENDOR-004,VentilationCo Inc,MFG-54236,406571012708
+HVA-0046,Duct Tape HVAC,High-quality duct tape hvac for professional and DIY projects.,hvac,,37.7,25.0,4.8,,each,12,VENDOR-002,DuctCo Inc,MFG-95426,
+HVA-0047,Register Vent 4x10,High-quality register vent 4x10 for professional and DIY projects.,hvac,,2.0,,,15.1,each,,VENDOR-004,RegisterCo Inc,MFG-38569,
+HVA-0048,Mini Split Unit 12000BTU,High-quality mini split unit 12000btu for professional and DIY projects.,hvac,,13.2,58.6,46.3,18.8,each,,VENDOR-003,,,
+HVA-0049,Refrigerant R410A,High-quality refrigerant r410a for professional and DIY projects.,hvac,,34.0,38.7,34.6,,each,6,VENDOR-001,RefrigerantCo Inc,,232308735151
+HVA-0050,Duct Insulation Wrap,High-quality duct insulation wrap for professional and DIY projects.,hvac,,39.9,4.9,26.0,2.1,each,1,VENDOR-004,DuctCo Inc,,606070444418
+HAR-0051,Door Knob Entry,High-quality door knob entry for professional and DIY projects.,hardware,,35.5,70.7,46.4,,each,24,VENDOR-004,DoorCo Inc,MFG-45179,
+HAR-0052,Deadbolt Lock,High-quality deadbolt lock for professional and DIY projects.,hardware,,12.7,27.5,22.2,13.9,each,12,VENDOR-001,DeadboltCo Inc,,
+HAR-0053,Cabinet Hinge Pair,High-quality cabinet hinge pair for professional and DIY projects.,hardware,,18.1,,,,each,12,VENDOR-005,,MFG-21221,
+HAR-0054,Drawer Slide 18in,High-quality drawer slide 18in for professional and DIY projects.,hardware,,20.6,23.8,23.4,11.0,each,,VENDOR-003,,MFG-50135,621275973591
+HAR-0055,Shelf Bracket Heavy,High-quality shelf bracket heavy for professional and DIY projects.,hardware,,27.9,95.7,26.9,,each,,VENDOR-003,,,
+HAR-0056,Anchor Bolt Set,High-quality anchor bolt set for professional and DIY projects.,hardware,,6.4,73.4,9.7,,each,,VENDOR-005,AnchorCo Inc,MFG-47093,314029509095
+HAR-0057,Wood Screw Box 100ct,High-quality wood screw box 100ct for professional and DIY projects.,hardware,,15.2,29.7,34.3,,each,,VENDOR-001,WoodCo Inc,MFG-26551,640104129762
+HAR-0058,Concrete Anchor Pack,High-quality concrete anchor pack for professional and DIY projects.,hardware,,5.6,,,,each,,VENDOR-003,,,226605882836
+HAR-0059,Door Closer Commercial,High-quality door closer commercial for professional and DIY projects.,hardware,,41.2,8.0,30.6,,each,,VENDOR-005,DoorCo Inc,,
+HAR-0060,Weather Stripping Kit,High-quality weather stripping kit for professional and DIY projects.,hardware,,28.1,57.6,30.1,9.4,each,12,VENDOR-005,WeatherCo Inc,,210552841781
+LUM-0061,2x4 Stud 8ft,High-quality 2x4 stud 8ft for professional and DIY projects.,lumber,,47.4,,,,each,6,VENDOR-002,,,
+LUM-0062,2x6 SPF 12ft,High-quality 2x6 spf 12ft for professional and DIY projects.,lumber,,22.8,28.7,11.9,17.0,each,,VENDOR-002,2x6Co Inc,MFG-91927,564706095026
+LUM-0063,4x4 Post Treated,High-quality 4x4 post treated for professional and DIY projects.,lumber,,6.2,,,,each,,VENDOR-002,,,
+LUM-0064,Deck Board 5/4x6 16ft,High-quality deck board 5/4x6 16ft for professional and DIY projects.,lumber,,37.6,28.4,6.8,16.9,each,24,VENDOR-004,,,
+LUM-0065,Furring Strip 1x2,High-quality furring strip 1x2 for professional and DIY projects.,lumber,,16.5,,,,each,1,VENDOR-003,FurringCo Inc,MFG-32962,
+LUM-0066,Cedar Board 1x6,High-quality cedar board 1x6 for professional and DIY projects.,lumber,,32.7,18.2,28.5,12.1,each,,VENDOR-003,CedarCo Inc,,
+LUM-0067,Trim Board Primed 1x4,High-quality trim board primed 1x4 for professional and DIY projects.,lumber,,8.5,48.1,32.1,,each,1,VENDOR-004,,,
+LUM-0068,LVL Beam 1-3/4x9-1/2,High-quality lvl beam 1-3/4x9-1/2 for professional and DIY projects.,lumber,,38.7,79.4,1.1,11.4,each,,VENDOR-005,LVLCo Inc,MFG-91973,
+LUM-0069,Fence Picket 1x6,High-quality fence picket 1x6 for professional and DIY projects.,lumber,,3.1,,,,each,,VENDOR-004,,MFG-89806,274847185866
+LUM-0070,Plywood Baltic Birch,High-quality plywood baltic birch for professional and DIY projects.,lumber,,15.9,,,,each,,VENDOR-001,PlywoodCo Inc,,420905367754
+PAI-0071,Interior Paint Gallon,High-quality interior paint gallon for professional and DIY projects.,paint,,25.7,,,23.5,each,,VENDOR-005,,,400947542743
+PAI-0072,Exterior Paint Gallon,High-quality exterior paint gallon for professional and DIY projects.,paint,,38.7,33.3,38.0,,each,,VENDOR-003,ExteriorCo Inc,MFG-96499,
+PAI-0073,Primer Gallon,High-quality primer gallon for professional and DIY projects.,paint,,7.9,33.8,26.9,11.2,each,,VENDOR-002,PrimerCo Inc,,
+PAI-0074,Stain Penetrating Qt,High-quality stain penetrating qt for professional and DIY projects.,paint,,42.9,31.2,23.2,9.5,each,6,VENDOR-004,StainCo Inc,,584665753840
+PAI-0075,Paint Brush 3in Pro,High-quality paint brush 3in pro for professional and DIY projects.,paint,,5.4,2.5,7.8,23.3,each,,VENDOR-003,PaintCo Inc,MFG-95175,
+PAI-0076,Roller Cover 9in,High-quality roller cover 9in for professional and DIY projects.,paint,,16.8,51.7,45.8,21.4,each,,VENDOR-005,,,417487972975
+PAI-0077,Painter Tape 2in,High-quality painter tape 2in for professional and DIY projects.,paint,,49.9,42.2,5.6,21.0,each,,VENDOR-003,PainterCo Inc,,492102028955
+PAI-0078,Drop Cloth 9x12,High-quality drop cloth 9x12 for professional and DIY projects.,paint,,19.1,,,13.8,each,6,VENDOR-002,,MFG-91226,257123463473
+PAI-0079,Caulk Tube Silicone,High-quality caulk tube silicone for professional and DIY projects.,paint,,12.0,44.7,32.3,11.4,each,,VENDOR-005,,MFG-55293,801364526954
+PAI-0080,Spray Paint Can,High-quality spray paint can for professional and DIY projects.,paint,,48.1,44.4,15.2,20.6,each,,VENDOR-004,SprayCo Inc,MFG-48696,
+TOO-0081,Cordless Drill 20V,High-quality cordless drill 20v for professional and DIY projects.,tools,,41.6,1.8,41.7,23.4,each,24,VENDOR-003,CordlessCo Inc,,796725319270
+TOO-0082,Circular Saw 7-1/4in,High-quality circular saw 7-1/4in for professional and DIY projects.,tools,,9.9,,,18.5,each,6,VENDOR-001,CircularCo Inc,MFG-50492,735798459372
+TOO-0083,Hammer 16oz Fiberglass,High-quality hammer 16oz fiberglass for professional and DIY projects.,tools,,18.6,,,8.2,each,,VENDOR-002,,MFG-57953,400276140106
+TOO-0084,Tape Measure 25ft,High-quality tape measure 25ft for professional and DIY projects.,tools,,41.6,,,11.8,each,12,VENDOR-001,TapeCo Inc,,897473738038
+TOO-0085,Level 48in,High-quality level 48in for professional and DIY projects.,tools,,33.9,81.3,27.2,,each,,VENDOR-003,LevelCo Inc,MFG-98188,741076101791
+TOO-0086,Screwdriver Set 10pc,High-quality screwdriver set 10pc for professional and DIY projects.,tools,,19.4,36.3,32.7,,each,12,VENDOR-005,,,872704936140
+TOO-0087,Pliers Set 3pc,High-quality pliers set 3pc for professional and DIY projects.,tools,,15.5,14.3,45.5,,each,,VENDOR-001,,MFG-60940,
+TOO-0088,Socket Set 40pc,High-quality socket set 40pc for professional and DIY projects.,tools,,33.7,90.9,20.7,4.1,each,,VENDOR-001,SocketCo Inc,MFG-46666,
+TOO-0089,Safety Glasses,High-quality safety glasses for professional and DIY projects.,tools,,18.8,91.3,41.2,,each,12,VENDOR-001,SafetyCo Inc,,
+TOO-0090,Work Gloves Pair,High-quality work gloves pair for professional and DIY projects.,tools,,42.5,64.0,31.2,1.0,each,6,VENDOR-002,WorkCo Inc,,330013571010

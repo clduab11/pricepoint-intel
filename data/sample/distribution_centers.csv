@@ -1,0 +1,4 @@
+center_id,market_id,vendor_id,center_name,center_type,city,state,country,zip_code,latitude,longitude,square_footage,max_daily_shipments,service_radius_miles
+DC-NE-001,MARKET-NE-001,VENDOR-004,Northeast Distribution Hub,warehouse,Newark,NJ,USA,07102,40.735,-74.172,250000,5000,200
+DC-SE-001,MARKET-SE-001,VENDOR-001,Southeast Fulfillment Center,fulfillment,Charlotte,NC,USA,28202,35.227,-80.843,300000,7500,250
+DC-WE-001,MARKET-WE-001,VENDOR-003,West Coast Distribution,warehouse,Riverside,CA,USA,92501,33.953,-117.396,400000,10000,300
